@@ -1,12 +1,11 @@
 import React from "react";
 import Board from "./Board";
 
-const AutomatedBoard = ({ manager }) => {
-  let [game, setGame] = React.useState(manager.game);
+const AutomatedBoard = ({ manager, setGame }) => {
   let [started, setStarted] = React.useState(false);
   return (
     <div>
-      <Board game={game} />
+      <Board board={manager.game.board} />
       <button
         disabled={started}
         onClick={() => {

@@ -1,32 +1,30 @@
 import React from "react";
 import AutomatedBoard from "./AutomatedBoard";
-import Board from "./InteractiveBoard";
-import GameManager from "./GameManager";
+import InteractiveBoard from "./InteractiveBoard";
 
-const Game = props => {
-  let players = [
-    {
-      name: (props.players.length && props.players[0].name) || "Player 1",
-      mark: (props.players.length && props.players[0].mark) || "🥳",
-      url: "https://jolly-yalow-bf3247.netlify.com/.netlify/functions/index"
-    },
-    {
-      name: (props.players.length && props.players[1].name) || "Player 2",
-      mark: (props.players.length && props.players[1].mark) || "O",
-      url: "https://jolly-yalow-bf3247.netlify.com/.netlify/functions/index"
-    }
-  ];
+const Game = ({ manager, mode }) => {
+  let [game, setGame] = React.useState(manager.game);
 
-  let manager = new GameManager(players);
-  manager.initGameState();
-  let automate = true;
   return (
     <div className="board-container">
-      {automate ? (
-        <AutomatedBoard manager={manager} />
+      {mode === "automated" ? (
+        <AutomatedBoard manager={manager} setGame={setGame} />
       ) : (
-        <Board manager={manager} />
+        <InteractiveBoard manager={manager} setGame={setGame} />
       )}
+      <div>
+        {manager.currentPlayer.name}
+        --
+        {manager.currentPlayer.mark}
+      </div>
+      {game.winner ? <div>{game.winner.name} wins!</div> : null}
+      {game.message ? <div>{game.message}</div> : null}
+      {game.error ? (
+        <div>
+          {game.error.message}{" "}
+          {manager.currentPlayer.fouls.map(e => e.position).join(",")}
+        </div>
+      ) : null}
     </div>
   );
 };

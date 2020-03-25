@@ -1,18 +1,15 @@
 import React from "react";
 import Board from "./Board";
-const InteractiveBoard = ({ manager }) => {
-  const [game, setGame] = React.useState(manager.game);
-
+const InteractiveBoard = ({ manager, setGame }) => {
   function selectCell(cell) {
-    if (manager.status === "inactive") {
+    if (manager.game.status === "inactive") {
       return;
     }
 
     manager.playMove(cell.position);
     setGame(manager.game);
   }
-
-  return <Board game={game} onCellClick={selectCell} />;
+  return <Board board={manager.game.board} onCellClick={selectCell} />;
 };
 
 export default InteractiveBoard;

@@ -2,9 +2,11 @@ import React from "react";
 import Game from "./Game";
 import "./App.css";
 
+import GameManager from "./GameManager";
 function App() {
   let [needsConfig, setNeedsConfig] = React.useState(false);
   let [players, setPlayers] = React.useState([]);
+  let [mode, setMode] = React.useState("unset");
   // let players = [];
   function configPlayers(player) {
     // players = [...players, player];
@@ -17,15 +19,44 @@ function App() {
     }
   }, [players]);
 
-  return (
-    <div className="App">
-      {needsConfig ? (
-        <Config configPlayers={configPlayers} />
-      ) : (
-        <Game players={players} />
-      )}
-    </div>
-  );
+  let _players = [
+    {
+      id: "p1",
+      name: (players.length && players[0].name) || "Brian",
+      mark: (players.length && players[0].mark) || "🦅",
+      url:
+        "https://sgc618u5qf.execute-api.us-east-1.amazonaws.com/Prod/TicTacToeBot"
+      // url: "https://jolly-yalow-bf3247.netlify.com/.netlify/functions/index"
+    },
+    {
+      id: "p2",
+      name: (players.length && players[1].name) || "Adrian",
+      mark: (players.length && players[1].mark) || "🥳",
+      url: "https://jolly-yalow-bf3247.netlify.com/.netlify/functions/index"
+
+      // url:
+      // "https://hu9gakacp8.execute-api.us-east-1.amazonaws.com/prod/hawkeye/jobs"
+    }
+  ];
+
+  let manager = new GameManager(_players);
+  manager.initGameState();
+  let Component;
+  if (mode === "unset") {
+    Component = (
+      <>
+        <div>Welcome To T3F</div>
+        <button onClick={() => setMode("interactive")}>Interactive</button>
+        <button onClick={() => setMode("automated")}>Automated</button>
+      </>
+    );
+  } else if (mode === "automated" && needsConfig) {
+    Component = <Config configPlayers={configPlayers} />;
+  } else {
+    Component = <Game manager={manager} mode={mode} />;
+  }
+
+  return <div className="App">{Component}</div>;
 }
 
 const Config = props => {
