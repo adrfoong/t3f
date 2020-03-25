@@ -30,18 +30,36 @@ code {
 
 .board {
   display: grid;
-  grid-template-columns: repeat(var(--cell-count), 100px);
-  grid-template-rows: repeat(var(--cell-count), 100px);
+  grid-template-columns: repeat(var(--cell-count), 150px);
+  grid-template-rows: repeat(var(--cell-count), 150px);
   border: 2px solid black;
 }
 
 .board .cell {
   border: 2px solid green;
-  border-collapse: collapse;
+  position: relative;
+}
+
+.board .cell:hover {
+  background-color: aquamarine;
+}
+
+.board .cell-label {
+  font-size: 1rem;
+  position: absolute;
+  left: 10px;
+  top: 10px;
 }
 
 .board .cell-mark {
-  font-size: 2rem;
+  font-size: 3rem;
+}
+
+.board .cell-mark-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
 }
 
 .config-form {

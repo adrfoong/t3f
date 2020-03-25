@@ -39,8 +39,6 @@ function App() {
     }
   ];
 
-  let manager = new GameManager(_players);
-  manager.initGameState();
   let Component;
   if (mode === "unset") {
     Component = (
@@ -53,7 +51,7 @@ function App() {
   } else if (mode === "automated" && needsConfig) {
     Component = <Config configPlayers={configPlayers} />;
   } else {
-    Component = <Game manager={manager} mode={mode} />;
+    Component = <Game players={_players} mode={mode} />;
   }
 
   return <div className="App">{Component}</div>;

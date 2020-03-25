@@ -1,3 +1,5 @@
+import produce from "immer";
+
 function InvalidMoveError({ player, position } = {}) {
   this.player = player;
   this.position = position;
@@ -21,16 +23,10 @@ const BoardController = {
     if (!BoardController.isMoveValid(state, position)) {
       throw new InvalidMoveError({ position });
     }
-    let newState = {
-      ...state,
-      cells: state.cells.map(cell => {
-        if (cell.position === position) {
-          return processFn(cell);
-        } else {
-          return cell;
-        }
-      })
-    };
+
+    let newState = produce(state, draft => {
+      draft.cells[position] = processFn(draft.cells[position]);
+    });
     BoardController.history.push(newState);
     return newState;
   }
@@ -136,13 +132,14 @@ export default class GameManager {
     });
   };
 
-  constructor(players) {
+  constructor(players, mode) {
     this.players = players.map(({ url, ...others }) => ({
       ...others,
       fouls: [],
       moves: [],
       think: this.think(url)
     }));
+    this.mode = mode;
     // this.players[1].think = async () => {
     //   return {
     //     json() {
@@ -152,12 +149,11 @@ export default class GameManager {
     // };
   }
 
-  initGameState = () => {
-    document.documentElement.style.setProperty(
-      "--cell-count",
-      GameManager.CELL_COUNT
-    );
+  get winner() {
+    return this.players.find(p => p.id === this.game.winner);
+  }
 
+  initGameState = () => {
     let state = {
       board: {
         cells: Array(GameManager.CELL_COUNT * GameManager.CELL_COUNT)
@@ -165,14 +161,22 @@ export default class GameManager {
           .map((_, i) => ({ position: i, mark: null, playerId: null }))
       },
       winner: null,
-      status: "active",
-      players: this.players
+      status: "inactive"
     };
 
     this.turnCount = 0;
     this.currentPlayer = this.getNextPlayer();
     this.game = state;
-    BoardController.state = state.board;
+  };
+
+  startGame = () => {
+    this.game = produce(this.game, draft => {
+      draft.status = "active";
+    });
+  };
+
+  swapPlayers = () => {
+    this.currentPlayer = this.getNextPlayer();
   };
 
   getNextPlayer = () => {
@@ -182,12 +186,16 @@ export default class GameManager {
   _checkGameEnd() {
     let isWinner = GameController.checkWin(this.game.board, this.currentPlayer);
     if (isWinner) {
-      this.game.status = "inactive";
-      this.game.winner = this.currentPlayer;
+      this.game = produce(this.game, draft => {
+        draft.status = "inactive";
+        draft.winner = this.currentPlayer.id;
+      });
       return true;
     } else if (GameController.checkBoardFull(this.game.board)) {
-      this.game.status = "inactive";
-      this.game.message = "Stalemate!";
+      this.game = produce(this.game, draft => {
+        draft.status = "inactive";
+        draft.message = "Stalemate!";
+      });
       return true;
     }
 
@@ -205,9 +213,9 @@ export default class GameManager {
   _onFailedPlay = e => {
     this.currentPlayer.fouls.push(e);
 
-    if (this.currentPlayer.fouls.length > 2) {
-      this.game = { ...this.game, error: new InvalidMovesThresholdExceeded() };
-      throw this.game.error;
+    if (this.mode === "automated" && this.currentPlayer.fouls.length > 2) {
+      this.error = new InvalidMovesThresholdExceeded();
+      throw this.error;
     }
   };
 
@@ -221,12 +229,13 @@ export default class GameManager {
 
   playMove = position => {
     try {
-      let boardState = BoardController.markCell(
-        this.game.board,
-        position,
-        this._processCell
-      );
-      this.game = { ...this.game, board: boardState };
+      this.game = produce(this.game, draft => {
+        draft.board = BoardController.markCell(
+          this.game.board,
+          position,
+          this._processCell
+        );
+      });
       this._onSuccessfulPlay(position);
     } catch (e) {
       this._onFailedPlay(e);
