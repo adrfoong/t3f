@@ -151,15 +151,15 @@ export default class GameManager {
       };
     }
 
-    // if (!this.players[1].url) {
-    //   this.players[1].think = async state => {
-    //     return {
-    //       json() {
-    //         return { position: state.cells.findIndex(c => !c.playerId) };
-    //       }
-    //     };
-    //   };
-    // }
+    if (!this.players[1].url) {
+      this.players[1].think = async state => {
+        return {
+          json() {
+            return { position: state.cells.findIndex(c => !c.playerId) };
+          }
+        };
+      };
+    }
   }
 
   get winner() {

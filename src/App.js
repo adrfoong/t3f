@@ -40,7 +40,7 @@ function App() {
   } else if (needsConfig) {
     Component = <Config configPlayers={configPlayers} />;
   } else {
-    Component = <Game players={_players} mode={mode} />;
+    Component = <Game players={players} mode={mode} />;
   }
 
   return <div className="App">{Component}</div>;
