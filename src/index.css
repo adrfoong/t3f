@@ -1,5 +1,6 @@
 * {
   box-sizing: border-box;
+  outline: none;
 }
 
 body {
@@ -32,16 +33,31 @@ code {
   display: grid;
   grid-template-columns: repeat(var(--cell-count), 150px);
   grid-template-rows: repeat(var(--cell-count), 150px);
-  border: 2px solid black;
+  border: 2px solid #2e2e2e;
+  border-radius: 4px;
 }
 
 .board .cell {
-  border: 2px solid green;
+  border: 2px solid #2e2e2e;
   position: relative;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.board .cell:hover {
+.board.active .cell {
+  cursor: pointer;
+}
+
+.board.active .cell:hover {
   background-color: aquamarine;
+  opacity: 0.75;
+}
+
+.board.active .cell.occupied:hover {
+  background-color: palevioletred;
+  opacity: 0.75;
 }
 
 .board .cell-label {
@@ -52,32 +68,65 @@ code {
 }
 
 .board .cell-mark {
-  font-size: 3rem;
+  font-family: "Gaegu", cursive;
+  font-size: 4rem;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .board .cell-mark-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
+  width: 100px;
+  height: 100px;
+
+  /* height: 100%; */
 }
 
 .config-form {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  column-gap: 10px;
+
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr auto;
 
   padding: 10px;
 
-  background-color: #6cdeff;
-  border: 5px solid #48dfff;
   border-radius: 5px;
 }
 
-.config-form-label {
+.config-container {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  flex-basis: 50px;
+}
+
+.config-label {
+  font-family: "Gaegu", cursive;
+  font-size: 60px;
+}
+
+.config-form .submit-button {
+  cursor: pointer;
+  grid-column-start: span 2;
+  justify-self: center;
+  font-family: "gaegu", cursive;
+  font-size: 30px;
+  border: none;
+  width: 100px;
+  height: 50px;
+}
+
+.config-form .submit-button:hover {
+  text-shadow: 2px 2px var(--orange-highlight);
+}
+
+.config-form-label {
+  font-family: "gaegu", cursive;
+  font-size: 30px;
+  margin-top: 0;
 }
 
 .config-form fieldset {
@@ -93,18 +142,91 @@ code {
   margin: auto;
 }
 
-.config-form label {
-  width: 200px;
-
-  display: flex;
-  justify-content: space-between;
-}
-
-.config-form label:not(:first-of-type) {
-  margin-top: 10px;
-}
-
 .config-form-container {
   display: flex;
   justify-content: space-around;
 }
+
+.player-form {
+  padding: 10px;
+  border-radius: 5px;
+}
+
+#p1 {
+  background-color: #ffc800;
+}
+
+#p2 {
+  background-color: #ff8d00;
+}
+
+.textfield {
+  height: 32px;
+  padding: 3px 12px 5px 12px;
+  border: 1px dashed #e1e1e1;
+  color: #4b4b4b;
+  background-color: #fefefe;
+  border-radius: 4px;
+  min-width: 48px;
+  font-size: 14px;
+}
+
+.textfield.dashed {
+  border: 1px black dashed;
+}
+
+#p1 .textfield.dashed {
+  border-color: #ff8d00;
+}
+
+#p2 .textfield.dashed {
+  border-color: #e88f0c;
+}
+
+.label {
+  display: block;
+  font-size: 10px;
+  padding: 4px 0 5px;
+  text-transform: uppercase;
+}
+
+.label:not(:first-of-type) {
+  margin-top: 10px;
+}
+
+.player-form .textfield {
+  font-family: "gaegu", cursive;
+  font-size: 20px;
+}
+
+.game-controls {
+  display: flex;
+}
+
+.btn.disabled {
+  cursor: initial;
+  color: #4b4b4b;
+}
+
+.btn.swap-button {
+  width: 200px;
+}
+.btn.swap-button:hover:not(.disabled) {
+  text-shadow: 2px 2px var(--orange-highlight);
+}
+
+.btn.start-button:hover:not(.disabled) {
+  text-shadow: 2px 2px var(--orange-highlight);
+}
+
+.btn.reset-button:hover:not(.disabled) {
+  text-shadow: 2px 2px rgb(224, 80, 128);
+}
+
+/* .highlight {
+  background-color: red;
+  background: url("./brush-stroke-banner-6.svg");
+  background-repeat: no-repeat;
+  background-size: 100% 95%;
+  padding: 8px 0;
+} */

@@ -140,13 +140,26 @@ export default class GameManager {
       think: this.think(url)
     }));
     this.mode = mode;
-    // this.players[1].think = async () => {
-    //   return {
-    //     json() {
-    //       return { position: 0 };
-    //     }
-    //   };
-    // };
+    // default AI
+    if (!this.players[0].url) {
+      this.players[0].think = async state => {
+        return {
+          json() {
+            return { position: state.cells.findIndex(c => !c.playerId) };
+          }
+        };
+      };
+    }
+
+    if (!this.players[1].url) {
+      this.players[1].think = async state => {
+        return {
+          json() {
+            return { position: state.cells.findIndex(c => !c.playerId) };
+          }
+        };
+      };
+    }
   }
 
   get winner() {
@@ -163,6 +176,9 @@ export default class GameManager {
       winner: null,
       status: "inactive"
     };
+    this.players.forEach(p => (p.fouls = []));
+    this.error = null;
+    // this.winner = null;
 
     this.turnCount = 0;
     this.currentPlayer = this.getNextPlayer();
@@ -187,13 +203,13 @@ export default class GameManager {
     let isWinner = GameController.checkWin(this.game.board, this.currentPlayer);
     if (isWinner) {
       this.game = produce(this.game, draft => {
-        draft.status = "inactive";
+        draft.status = "complete";
         draft.winner = this.currentPlayer.id;
       });
       return true;
     } else if (GameController.checkBoardFull(this.game.board)) {
       this.game = produce(this.game, draft => {
-        draft.status = "inactive";
+        draft.status = "complete";
         draft.message = "Stalemate!";
       });
       return true;
@@ -213,9 +229,13 @@ export default class GameManager {
   _onFailedPlay = e => {
     this.currentPlayer.fouls.push(e);
 
-    if (this.mode === "automated" && this.currentPlayer.fouls.length > 2) {
-      this.error = new InvalidMovesThresholdExceeded();
-      throw this.error;
+    if (this.mode === "automated") {
+      if (this.currentPlayer.fouls.length > 2) {
+        this.error = new InvalidMovesThresholdExceeded();
+        throw this.error;
+      } else {
+        this.error = e;
+      }
     }
   };
 

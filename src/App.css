@@ -1,38 +1,97 @@
-.App {
-  text-align: center;
+:root {
+  --green-highlight: yellowgreen;
+  --orange-highlight: #e8b90c;
+  --blue-highlight: #00ccff;
+  --p1-color: #ffc800;
+  --p2-color: #ff8d00;
 }
 
-.App-logo {
-  height: 40vmin;
+.logo {
+  fill: url(#t3-gradient);
+  width: 100vw;
   pointer-events: none;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.landing {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.main-menu {
+  width: 400px;
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.main-menu .btn {
+  font-family: "Gaegu", cursive;
+  font-size: 30px;
+}
+
+.btn {
+  font-family: "Gaegu", cursive;
+  font-size: 30px;
+  width: 150px;
+  height: 50px;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  color: #313131;
+}
+
+.btn:hover:not(.disabled) {
+  color: #070707;
+}
+
+.main-menu .btn-interactive:hover {
+  text-shadow: 2px 2px var(--green-highlight);
+}
+
+.main-menu .btn-automated:hover {
+  text-shadow: 2px 2px var(--blue-highlight);
+}
+
+.info {
+  font-family: "gaegu", cursive;
+  font-size: 3rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.player-turn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+#header-shape-gradient {
+  --color-stop: #f12c06;
+  --color-bot: #faed34;
+}
+
+#gradient-horizontal {
+  --color-stop-1: #3bafff;
+  --color-stop-2: #26a5d7;
+  --color-stop-3: #00d4ff;
+}
+
+#t3-gradient {
+  --t3-color-stop-1: palevioletred;
+  --t3-color-stop-2: var(--green-highlight);
+  --t3-color-stop-3: var(--blue-highlight);
+}
+
+.brush {
+  width: 800px;
+  height: 500px;
+  position: absolute;
+  top: 27vh;
+  z-index: -1;
+  /* fill: var(--blue-highlight); */
+  fill: url(#gradient-horizontal);
 }

@@ -1,7 +1,7 @@
 import React from "react";
 import GameManager from "./GameManager";
 import Board from "./Board";
-
+import { ReactComponent as Brush } from "./brush-stroke-banner-6.svg";
 class ManagedGame extends React.Component {
   constructor(props) {
     super(props);
@@ -18,12 +18,11 @@ class ManagedGame extends React.Component {
   };
 
   selectCell = cell => {
-    if (this.manager.game.status === "inactive") {
-      return;
+    if (this.manager.game.status === "active") {
+      this.manager.playMove(cell.position);
+      this.setState({});
     }
 
-    this.manager.playMove(cell.position);
-    this.setState({});
   };
 
   startGame = () => {
@@ -50,28 +49,35 @@ class ManagedGame extends React.Component {
       <div className="board-container">
         <Board
           board={this.manager.game.board}
+          boardClassName={this.manager.game.status}
           onCellClick={
             this.props.mode === "automated" ? undefined : this.selectCell
           }
         />
-        <button
-          disabled={this.manager.game.status === "active"}
-          onClick={this.startGame}
-        >
-          Start
-        </button>
-        <button
-          disabled={this.manager.game.status === "active"}
-          onClick={this.swapPlayers}
-        >
-          Swap Players
-        </button>
-        <button
-          disabled={this.manager.game.status === "active"}
-          onClick={this.reset}
-        >
-          Reset
-        </button>
+        <div className="game-controls">
+          <button
+            className={`btn start-button ${
+              this.manager.game.status === "inactive" ? "" : "disabled"
+            }`}
+            disabled={this.manager.game.status !== "inactive"}
+            onClick={this.startGame}
+          >
+            Start
+          </button>
+          <button
+            className={`btn swap-button ${
+              this.manager.game.status === "inactive" ? "" : "disabled"
+            }`}
+            disabled={this.manager.game.status !== "inactive"}
+            onClick={this.swapPlayers}
+          >
+            Swap Players
+          </button>
+          <button className={`btn reset-button`} onClick={this.reset}>
+            Reset
+          </button>
+        </div>
+
         <Info manager={this.manager} game={this.manager.game} />
       </div>
     );
@@ -80,21 +86,22 @@ class ManagedGame extends React.Component {
 
 const Info = ({ manager, game }) => {
   return (
-    <>
-      <div>
-        {manager.currentPlayer.name}
-        --
-        {manager.currentPlayer.mark}
-      </div>
+    <div className="info">
+      <Brush className="brush" />
+      {game.status !== "complete" ? (
+        <div className="player-turn">
+          {manager.currentPlayer.name} | {manager.currentPlayer.mark}
+        </div>
+      ) : null}
       {manager.winner ? <div>{manager.winner.name} wins!</div> : null}
       {game.message ? <div>{game.message}</div> : null}
-      {game.error ? (
+      {manager.error ? (
         <div>
-          {game.error.message}{" "}
+          {manager.error.message}{" "}
           {manager.currentPlayer.fouls.map(e => e.position).join(",")}
         </div>
       ) : null}
-    </>
+    </div>
   );
 };
 
