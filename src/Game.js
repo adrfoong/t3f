@@ -22,7 +22,6 @@ class ManagedGame extends React.Component {
       this.manager.playMove(cell.position);
       this.setState({});
     }
-
   };
 
   startGame = () => {
@@ -34,7 +33,6 @@ class ManagedGame extends React.Component {
   };
 
   swapPlayers = () => {
-    this.reset();
     this.manager.swapPlayers();
     this.setState({});
   };

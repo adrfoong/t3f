@@ -216,7 +216,7 @@ code {
 }
 
 .btn.start-button:hover:not(.disabled) {
-  text-shadow: 2px 2px var(--orange-highlight);
+  text-shadow: 2px 2px var(--green-highlight);
 }
 
 .btn.reset-button:hover:not(.disabled) {
