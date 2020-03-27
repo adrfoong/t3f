@@ -137,11 +137,11 @@ export default class GameManager {
       ...others,
       fouls: [],
       moves: [],
-      think: this.think(url)
+      think: url ? this.think(url) : undefined
     }));
     this.mode = mode;
     // default AI
-    if (!this.players[0].url) {
+    if (!this.players[0].think) {
       this.players[0].think = async state => {
         return {
           json() {
@@ -151,7 +151,7 @@ export default class GameManager {
       };
     }
 
-    if (!this.players[1].url) {
+    if (!this.players[1].think) {
       this.players[1].think = async state => {
         return {
           json() {
@@ -176,7 +176,10 @@ export default class GameManager {
       winner: null,
       status: "inactive"
     };
-    this.players.forEach(p => (p.fouls = []));
+    this.players.forEach(p => {
+      p.fouls = [];
+      p.moves = [];
+    });
     this.error = null;
     // this.winner = null;
 

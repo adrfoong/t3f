@@ -19,21 +19,6 @@ function App() {
     }
   }, [players]);
 
-  let _players = [
-    {
-      id: "p1",
-      name: players.length && players[0].name,
-      mark: players.length && players[0].mark,
-      url: ""
-    },
-    {
-      id: "p2",
-      name: players.length && players[1].name,
-      mark: players.length && players[1].mark,
-      url: ""
-    }
-  ];
-
   let Component;
   if (mode === "unset") {
     Component = <LandingPage setMode={setMode} />;
@@ -129,11 +114,13 @@ let reducer = (state, action) => {
 
 const Form = props => {
   let [player1, dispatch1] = React.useReducer(reducer, {
+    id: "p1",
     name: "Player 1",
     mark: "X",
     url: ""
   });
   let [player2, dispatch2] = React.useReducer(reducer, {
+    id: "p2",
     name: "Player 2",
     mark: "O",
     url: ""
