@@ -141,25 +141,25 @@ export default class GameManager {
     }));
     this.mode = mode;
     // default AI
-    if (!this.players[0].url) {
-      this.players[0].think = async state => {
-        return {
-          json() {
-            return { position: state.cells.findIndex(c => !c.playerId) };
-          }
-        };
-      };
-    }
+    // if (!this.players[0].url) {
+    //   this.players[0].think = async state => {
+    //     return {
+    //       json() {
+    //         return { position: state.cells.findIndex(c => !c.playerId) };
+    //       }
+    //     };
+    //   };
+    // }
 
-    if (!this.players[1].url) {
-      this.players[1].think = async state => {
-        return {
-          json() {
-            return { position: state.cells.findIndex(c => !c.playerId) };
-          }
-        };
-      };
-    }
+    // if (!this.players[1].url) {
+    //   this.players[1].think = async state => {
+    //     return {
+    //       json() {
+    //         return { position: state.cells.findIndex(c => !c.playerId) };
+    //       }
+    //     };
+    //   };
+    // }
   }
 
   get winner() {
