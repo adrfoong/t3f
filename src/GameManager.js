@@ -274,7 +274,12 @@ export default class GameManager {
       .catch(e => {
         throw new ThinkError({ playerName: this.currentPlayer.name });
       });
+
+    let cell = document.querySelectorAll(".cell")[position];
+    cell.classList.add("hover");
+    await new Promise(r => setTimeout(r, 500));
     this.playMove(position);
+    cell.classList.remove("hover");
   };
 
   async run(updateView) {

@@ -19,6 +19,8 @@ code {
 
 :root {
   --cell-count: 3;
+  --occupied-cell-color: palevioletred;
+  --available-cell-color: aquamarine;
 }
 
 .board-container {
@@ -50,16 +52,28 @@ code {
   cursor: pointer;
 }
 
-.board.active .cell:hover {
-  background-color: aquamarine;
+.board.active .cell:hover,
+.board.active .cell:focus,
+.board.active .cell.hover {
+  background-color: var(--available-cell-color);
   opacity: 0.75;
 }
 
-.board.active .cell.occupied:hover {
-  background-color: palevioletred;
+.board.active .cell.occupied:hover,
+.board.active .cell.occupied:focus,
+.board.active .cell.occupied.hover {
+  background-color: var(--occupied-cell-color);
   opacity: 0.75;
 }
 
+/* .board.active .cell:focus {
+  background-color: green;
+  opacity: 1;
+} */
+
+.board.active .cell:active {
+  background-color: #02ac73;
+}
 .board .cell-label {
   font-size: 1rem;
   position: absolute;

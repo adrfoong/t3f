@@ -17,9 +17,10 @@ class ManagedGame extends React.Component {
     this.setState({});
   };
 
-  selectCell = cell => {
+  selectCell = (cell, e) => {
     if (this.manager.game.status === "active") {
       this.manager.playMove(cell.position);
+      e.target.closest(".cell").blur();
       this.setState({});
     }
   };
