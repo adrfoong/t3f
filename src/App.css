@@ -92,12 +92,11 @@
 }
 
 .brush {
-  width: 800px;
-  height: 500px;
+  width: 930px;
+  height: 250px;
   position: absolute;
-  top: 27vh;
+  bottom: 100px;
   z-index: -1;
-  /* fill: var(--blue-highlight); */
   fill: url(#gradient-horizontal);
 }
 

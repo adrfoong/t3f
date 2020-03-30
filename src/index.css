@@ -175,7 +175,7 @@ code {
 }
 
 .textfield {
-  height: 32px;
+  height: 38px;
   padding: 3px 12px 5px 12px;
   border: 1px dashed #e1e1e1;
   color: #4b4b4b;
@@ -183,6 +183,10 @@ code {
   border-radius: 4px;
   min-width: 48px;
   font-size: 14px;
+}
+
+.player-form .textfield {
+  width: 100%;
 }
 
 .textfield.dashed {
@@ -202,6 +206,15 @@ code {
   font-size: 10px;
   padding: 4px 0 5px;
   text-transform: uppercase;
+}
+
+.label.horizontal {
+  display: inline;
+}
+
+input[type="checkbox"] + .label {
+  font-family: "gaegu", cursive;
+  font-size: 14px;
 }
 
 .label:not(:first-of-type) {
@@ -237,10 +250,31 @@ code {
   text-shadow: 2px 2px rgb(224, 80, 128);
 }
 
-/* .highlight {
-  background-color: red;
-  background: url("./brush-stroke-banner-6.svg");
-  background-repeat: no-repeat;
-  background-size: 100% 95%;
-  padding: 8px 0;
-} */
+.checkbox-group .label {
+  margin-left: 5px;
+}
+
+.checkbox-group .label:not(:last-of-type) {
+  margin-right: 5px;
+}
+
+.select {
+  height: 32px;
+  padding: 3px 12px 5px 12px;
+  border: 1px dashed #e1e1e1;
+  color: #4b4b4b;
+  background-color: #fefefe;
+  border-radius: 4px;
+  min-width: 48px;
+  font-size: 14px;
+}
+
+.player-form .select {
+  font-family: "gaegu", cursive;
+  font-size: 20px;
+}
+
+.select option {
+  color: red;
+  font-size: 14px;
+}

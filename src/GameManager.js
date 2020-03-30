@@ -1,4 +1,5 @@
 import produce from "immer";
+import Bots, { responseWrapper } from "./Bots";
 
 function InvalidMoveError({ player, position } = {}) {
   this.player = player;
@@ -122,7 +123,7 @@ const GameController = {
 
 export default class GameManager {
   static CELL_COUNT = 3;
-  think = url => state => {
+  thinkGenerator = url => state => {
     return fetch(url, {
       method: "POST",
       headers: {
@@ -132,33 +133,33 @@ export default class GameManager {
     });
   };
 
-  constructor(players, mode) {
+  constructor(players, updateView) {
     this.players = players.map(({ url, ...others }) => ({
       ...others,
       fouls: [],
       moves: [],
-      think: url ? this.think(url) : undefined
+      think: url ? this.thinkGenerator(url) : undefined
     }));
-    this.mode = mode;
+
+    this.updateView = updateView;
+
+    let types = players.map(p => p.type);
+
+    if (types.every(t => t === "human")) {
+      this.mode = "interactive";
+    } else if (types.includes("human")) {
+      this.mode = "semi-automated";
+    } else {
+      this.mode = "automated";
+    }
+
     // default AI
     if (!this.players[0].think) {
-      this.players[0].think = async state => {
-        return {
-          json() {
-            return { position: state.cells.findIndex(c => !c.playerId) };
-          }
-        };
-      };
+      this.players[0].think = responseWrapper(Bots.nextAvailable);
     }
 
     if (!this.players[1].think) {
-      this.players[1].think = async state => {
-        return {
-          json() {
-            return { position: state.cells.findIndex(c => !c.playerId) };
-          }
-        };
-      };
+      this.players[1].think = responseWrapper(Bots.nextAvailable);
     }
   }
 
@@ -232,7 +233,7 @@ export default class GameManager {
   _onFailedPlay = e => {
     this.currentPlayer.fouls.push(e);
 
-    if (this.mode === "automated") {
+    if (this.currentPlayer.type === "bot") {
       if (this.currentPlayer.fouls.length > 2) {
         this.error = new InvalidMovesThresholdExceeded();
         throw this.error;
@@ -266,7 +267,7 @@ export default class GameManager {
     }
   };
 
-  runPlayerMove = async () => {
+  runAutomatedMove = async () => {
     let state = { players: this.players, cells: this.game.board.cells };
     let { position } = await this.currentPlayer
       .think(state)
@@ -280,22 +281,31 @@ export default class GameManager {
     await new Promise(r => setTimeout(r, 500));
     this.playMove(position);
     cell.classList.remove("hover");
+    this.updateView(this.game);
   };
 
-  async run(updateView) {
-    while (!this.game.winner && this.game.status === "active") {
+  async runWhile(evalCond) {
+    while (evalCond()) {
       try {
-        await this.runPlayerMove();
-        updateView(this.game);
-
+        await this.runAutomatedMove();
         // sleep
-        await new Promise(r => setTimeout(r, 1000));
+        await new Promise(r => setTimeout(r, 500));
       } catch (e) {
         console.warn(e);
         // this.game = { ...this.game, error: e.message };
-        updateView(this.game);
+        this.updateView(this.game);
         break;
       }
     }
+  }
+
+  runFullyAutomatedGame() {
+    this.runWhile(() => !this.game.winner && this.game.status === "active");
+  }
+
+  runSemiAutomatedGame() {
+    this.runWhile(
+      () => this.currentPlayer.type === "bot" && this.game.status === "active"
+    );
   }
 }

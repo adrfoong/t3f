@@ -5,7 +5,7 @@ import { ReactComponent as Brush } from "./brush-stroke-banner-6.svg";
 class ManagedGame extends React.Component {
   constructor(props) {
     super(props);
-    this.manager = new GameManager(props.players, props.mode);
+    this.manager = new GameManager(props.players, this.updateGame);
     this.manager.initGameState();
     document.documentElement.style.setProperty(
       "--cell-count",
@@ -18,17 +18,33 @@ class ManagedGame extends React.Component {
   };
 
   selectCell = (cell, e) => {
+    if (this.manager.currentPlayer.type !== "human") {
+      return;
+    }
     if (this.manager.game.status === "active") {
       this.manager.playMove(cell.position);
       e.target.closest(".cell").blur();
-      this.setState({});
+      this.setState({}, () => {
+        // Make bot move after player
+        if (
+          this.manager.mode === "semi-automated" &&
+          this.manager.game.status === "active"
+        ) {
+          this.manager.runSemiAutomatedGame();
+        }
+      });
     }
   };
 
   startGame = () => {
     this.manager.startGame();
-    if (this.props.mode === "automated") {
-      this.manager.run(this.updateGame);
+    if (this.manager.mode === "automated") {
+      this.manager.runFullyAutomatedGame();
+    } else if (this.manager.mode === "semi-automated") {
+      // Make the first bot move
+      if (this.manager.currentPlayer.type !== "human") {
+        this.manager.runAutomatedMove();
+      }
     }
     this.setState({});
   };
