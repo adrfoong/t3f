@@ -12,6 +12,12 @@ const Bots = {
     think: state => ({
       position: state.cells.findIndex(cell => !cell.playerId)
     })
+  },
+  always1: {
+    label: "Always Cell #1",
+    think: state => ({
+      position: 1
+    })
   }
 };
 

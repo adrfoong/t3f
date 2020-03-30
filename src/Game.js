@@ -18,19 +18,19 @@ class ManagedGame extends React.Component {
   };
 
   selectCell = (cell, e) => {
-    if (this.manager.currentPlayer.type !== "human") {
+    if (this.manager.status === "busy") {
       return;
     }
     if (this.manager.game.status === "active") {
       this.manager.playMove(cell.position);
       e.target.closest(".cell").blur();
-      this.setState({}, () => {
+      this.setState({}, async () => {
         // Make bot move after player
         if (
           this.manager.mode === "semi-automated" &&
           this.manager.game.status === "active"
         ) {
-          this.manager.runSemiAutomatedGame();
+          await this.manager.runSemiAutomatedGame();
         }
       });
     }

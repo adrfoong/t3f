@@ -7,7 +7,7 @@ function InvalidMoveError({ player, position } = {}) {
   this.message = "Cell is already occupied";
 }
 
-function ThinkError({ playerName }) {
+function MoveError({ playerName }) {
   this.message = `Something went wrong while trying to get ${playerName}'s next move`;
 }
 
@@ -134,11 +134,16 @@ export default class GameManager {
   };
 
   constructor(players, updateView) {
-    this.players = players.map(({ url, ...others }) => ({
+    this.players = players.map(({ url, type, bot, ...others }) => ({
       ...others,
       fouls: [],
       moves: [],
-      think: url ? this.thinkGenerator(url) : undefined
+      type,
+      ...(type === "bot" && {
+        think: url
+          ? this.thinkGenerator(url)
+          : responseWrapper(Bots[bot] || Bots.nextAvailable)
+      })
     }));
 
     this.updateView = updateView;
@@ -151,15 +156,6 @@ export default class GameManager {
       this.mode = "semi-automated";
     } else {
       this.mode = "automated";
-    }
-
-    // default AI
-    if (!this.players[0].think) {
-      this.players[0].think = responseWrapper(Bots.nextAvailable);
-    }
-
-    if (!this.players[1].think) {
-      this.players[1].think = responseWrapper(Bots.nextAvailable);
     }
   }
 
@@ -181,6 +177,9 @@ export default class GameManager {
       p.fouls = [];
       p.moves = [];
     });
+
+    // not game status
+    this.status = null;
     this.error = null;
     // this.winner = null;
 
@@ -268,12 +267,17 @@ export default class GameManager {
   };
 
   runAutomatedMove = async () => {
+    if (this.status === "busy") {
+      return;
+    }
+    let previousStatus = this.status;
+    this.status = "busy";
     let state = { players: this.players, cells: this.game.board.cells };
     let { position } = await this.currentPlayer
       .think(state)
       .then(res => res.json())
       .catch(e => {
-        throw new ThinkError({ playerName: this.currentPlayer.name });
+        throw new MoveError({ playerName: this.currentPlayer.name });
       });
 
     let cell = document.querySelectorAll(".cell")[position];
@@ -281,7 +285,8 @@ export default class GameManager {
     await new Promise(r => setTimeout(r, 500));
     this.playMove(position);
     cell.classList.remove("hover");
-    this.updateView(this.game);
+    this.updateView();
+    this.status = previousStatus;
   };
 
   async runWhile(evalCond) {
@@ -293,7 +298,7 @@ export default class GameManager {
       } catch (e) {
         console.warn(e);
         // this.game = { ...this.game, error: e.message };
-        this.updateView(this.game);
+        this.updateView();
         break;
       }
     }
