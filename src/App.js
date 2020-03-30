@@ -57,13 +57,58 @@ const LandingPage = ({ setMode }) => {
   );
 };
 
+const BotInfo = () => {
+  return (
+    <div className="bot-info">
+      <div>
+        Request payload
+        <pre>
+          {`{
+  players: [...],
+  cells: [...]
+}`}
+        </pre>
+      </div>
+      <div>
+        Expected response
+        <pre>{`{ position: 3 }`}</pre>
+      </div>
+      <div>
+        Player
+        <pre>
+          {`{
+  id: "p1",
+  name: "Player 1",
+  mark: "X",
+  fouls: [{ position: 1}],
+  moves: [0, 2]
+}`}
+        </pre>
+      </div>
+      <div>
+        Cell
+        <pre>{`{ 
+  position: 0,
+  playerId: 'p1'
+}`}</pre>
+      </div>
+    </div>
+  );
+};
+
 const Config = props => {
+  let [showInfo, setShowInfo] = React.useState(false);
   return (
     <div className="config-container">
       <div className="config-label">Player Setup</div>
       <div className="config-form-container">
-        <Form submit={props.configPlayers} mode={props.mode} />
+        <Form
+          submit={props.configPlayers}
+          mode={props.mode}
+          setShowInfo={setShowInfo}
+        />
       </div>
+      {showInfo ? <BotInfo /> : null}
     </div>
   );
 };
@@ -134,24 +179,20 @@ const PlayerForm = ({ id, label, mode, player, dispatch }) => {
       <>
         <Label>Type</Label>
         <div className="checkbox-group">
-          <div>
-            <input
-              name="type"
-              type="checkbox"
-              checked={player.type === "human"}
-              onChange={e => dispatch({ type: "type", value: "human" })}
-            />
-            <Label align="horizontal">Human</Label>
-          </div>
-          <div>
-            <input
-              name="type"
-              type="checkbox"
-              checked={player.type === "bot"}
-              onChange={e => dispatch({ type: "type", value: "bot" })}
-            />
-            <Label align="horizontal">Robot</Label>
-          </div>
+          <input
+            name="type"
+            type="checkbox"
+            checked={player.type === "human"}
+            onChange={e => dispatch({ type: "type", value: "human" })}
+          />
+          <Label align="horizontal">Human</Label>
+          <input
+            name="type"
+            type="checkbox"
+            checked={player.type === "bot"}
+            onChange={e => dispatch({ type: "type", value: "bot" })}
+          />
+          <Label align="horizontal">Robot</Label>
         </div>
       </>
       {player.type === "bot" ? (
@@ -209,6 +250,15 @@ const Form = props => {
     props.submit([player1, player2]);
   };
 
+  let { setShowInfo } = props;
+
+  React.useEffect(() => {
+    if (player1.bot === "custom" || player2.bot === "custom") {
+      setShowInfo(true);
+    } else {
+      setShowInfo(false);
+    }
+  }, [player1, player2, setShowInfo]);
   return (
     <form className="config-form" onSubmit={submit}>
       <PlayerForm
@@ -225,6 +275,9 @@ const Form = props => {
         player={player2}
         dispatch={dispatch2}
       />
+      {/* {player1.bot === "custom" || player2.bot === "custom" ? (
+        <BotInfo />
+      ) : null} */}
 
       <button className="btn submit-button" onClick={submit}>
         Done

@@ -272,7 +272,13 @@ export default class GameManager {
     }
     let previousStatus = this.status;
     this.status = "busy";
-    let state = { players: this.players, cells: this.game.board.cells };
+    let state = {
+      players: this.players,
+      cells: this.game.board.cells.map(({ position, playerId }) => ({
+        position,
+        playerId
+      }))
+    };
     let { position } = await this.currentPlayer
       .think(state)
       .then(res => res.json())
